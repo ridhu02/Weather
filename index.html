@@ -1,0 +1,3231 @@
+<!DOCTYPE html>
+<!-- saved from url=(0028)http://127.0.0.1:5500/r.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SkyCast Weather Dashboard</title>
+
+<script src="./index_files/chart.js.download"></script>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    min-height:100vh;
+    padding:25px;
+    color:white;
+
+    background:
+        radial-gradient(
+            circle at 15% 15%,
+            #315b9b,
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 85% 10%,
+            #263c79,
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #07152d,
+            #102b55
+        );
+}
+
+.container{
+    max-width:1250px;
+    margin:auto;
+}
+
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:bold;
+}
+
+.logo span{
+    color:#61d5ff;
+}
+
+.search{
+    display:flex;
+    gap:10px;
+}
+
+.search input{
+    width:320px;
+    padding:14px 20px;
+    border-radius:30px;
+    border:1px solid rgba(255,255,255,.2);
+    outline:none;
+    background:rgba(255,255,255,.12);
+    color:white;
+    font-size:15px;
+}
+
+.search input::placeholder{
+    color:#c7d3e3;
+}
+
+.search button{
+    width:48px;
+    height:48px;
+    border:0;
+    border-radius:50%;
+    background:#5bd0ff;
+    cursor:pointer;
+    font-size:18px;
+}
+
+.dashboard{
+    display:grid;
+    grid-template-columns:1.5fr 1fr;
+    gap:20px;
+}
+
+.card{
+    padding:25px;
+    border-radius:25px;
+    background:rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.15);
+    backdrop-filter:blur(18px);
+    box-shadow:0 20px 50px rgba(0,0,0,.18);
+}
+
+.location{
+    color:#c8d5e6;
+}
+
+.location strong{
+    color:white;
+    font-size:21px;
+}
+
+.country{
+    color:#aebdd0;
+}
+
+.date{
+    color:#aebdd0;
+    margin-top:7px;
+}
+
+.weather-main{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:30px;
+}
+
+.temperature{
+    font-size:90px;
+    font-weight:300;
+}
+
+.condition{
+    font-size:21px;
+}
+
+.weather-icon{
+    font-size:105px;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    margin-top:20px;
+}
+
+.stat{
+    padding:18px;
+    border-radius:18px;
+    background:rgba(255,255,255,.08);
+}
+
+.stat-title{
+    color:#aebdd0;
+    font-size:13px;
+}
+
+.stat-value{
+    margin-top:8px;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.section-title{
+    font-size:20px;
+    margin-bottom:18px;
+}
+
+.hourly{
+    display:flex;
+    gap:12px;
+    overflow-x:auto;
+}
+
+.hour{
+    min-width:82px;
+    padding:15px 10px;
+    text-align:center;
+    border-radius:18px;
+    background:rgba(255,255,255,.07);
+}
+
+.hour.active{
+    background:#5bd0ff;
+    color:#07152d;
+}
+
+.hour-icon{
+    font-size:28px;
+    margin:10px 0;
+}
+
+.hour-temp{
+    font-weight:bold;
+}
+
+.weather-details{
+    margin-top:20px;
+}
+
+.chart-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+}
+
+.chart-card{
+    padding:18px;
+    border-radius:20px;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.chart-wide{
+    grid-column:1/-1;
+}
+
+.chart-title{
+    font-size:16px;
+    margin-bottom:12px;
+}
+
+.chart-wrapper{
+    position:relative;
+    height:250px;
+}
+
+
+/* SUN + MOON */
+
+.astronomy{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.astro-box{
+    padding:20px;
+    text-align:center;
+    border-radius:20px;
+    background:rgba(255,255,255,.07);
+}
+
+.astro-icon{
+    font-size:42px;
+    margin-bottom:10px;
+}
+
+.astro-title{
+    color:#aebdd0;
+    font-size:13px;
+    margin-bottom:5px;
+}
+
+.astro-time{
+    font-size:18px;
+    font-weight:bold;
+}
+
+.moon-phase{
+    margin-top:10px;
+    color:#b8c8da;
+}
+
+.right{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+}
+
+.forecast-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 0;
+    border-bottom:1px solid rgba(255,255,255,.1);
+}
+
+.forecast-item:last-child{
+    border-bottom:0;
+}
+
+.forecast-icon{
+    font-size:28px;
+}
+
+.forecast-temp{
+    font-weight:bold;
+}
+
+.forecast-temp span{
+    color:#91a3b9;
+    margin-left:8px;
+}
+
+.uv-card{
+    text-align:center;
+}
+
+.uv-chart{
+    height:220px;
+    position:relative;
+}
+
+.uv-value{
+    font-size:35px;
+    font-weight:bold;
+    margin-top:-25px;
+}
+
+.uv-label{
+    color:#aebdd0;
+    margin-top:5px;
+}
+
+.status{
+    text-align:center;
+    margin-top:15px;
+    color:#aebdd0;
+    font-size:13px;
+}
+
+
+@media(max-width:850px){
+
+    body{
+        padding:15px;
+    }
+
+    header{
+        flex-direction:column;
+        align-items:stretch;
+        gap:18px;
+    }
+
+    .search input{
+        width:100%;
+    }
+
+    .dashboard{
+        grid-template-columns:1fr;
+    }
+
+    .temperature{
+        font-size:65px;
+    }
+
+    .weather-icon{
+        font-size:80px;
+    }
+
+}
+
+
+@media(max-width:600px){
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+
+    .chart-grid{
+        grid-template-columns:1fr;
+    }
+
+    .chart-wide{
+        grid-column:auto;
+    }
+
+    .astronomy{
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<header>
+
+    <div class="logo">
+
+        Sky<span>Cast</span> ☁
+
+    </div>
+
+
+    <div class="search">
+
+        <input id="cityInput" type="text" placeholder="Search any city...">
+
+        <button onclick="searchCity()">
+            🔍
+        </button>
+
+    </div>
+
+</header>
+
+
+
+<div class="dashboard">
+
+
+<div>
+
+
+<!-- =========================
+     CURRENT WEATHER
+========================= -->
+
+<div class="card">
+
+    <div class="location">
+
+        📍
+
+        <strong id="city">Babain</strong>
+
+        <span class="country" id="country"> • India</span>
+
+    </div>
+
+
+    <div class="date" id="date">Sunday, August 30</div>
+
+
+    <div class="weather-main">
+
+        <div>
+
+            <div class="temperature">
+
+                <span id="temperature">32</span>°
+
+            </div>
+
+
+            <div class="condition" id="condition">Mainly Clear</div>
+
+        </div>
+
+
+        <div class="weather-icon" id="weatherIcon">🌤️</div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================
+     STATS
+========================= -->
+
+<div class="stats">
+
+
+    <div class="stat">
+
+        <div class="stat-title">
+            Feels Like
+        </div>
+
+        <div class="stat-value" id="feels">40 °C</div>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div class="stat-title">
+            Humidity
+        </div>
+
+        <div class="stat-value" id="humidity">69%</div>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div class="stat-title">
+            Wind
+        </div>
+
+        <div class="stat-value" id="wind">5 km/h</div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =========================
+     HOURLY
+========================= -->
+
+<div class="card" style="margin-top:20px">
+
+
+    <div class="section-title">
+
+        Hourly Forecast
+
+    </div>
+
+
+    <div class="hourly" id="hourly"><div class="hour active">
+
+            <div>
+
+                Now
+
+            </div>
+
+
+            <div class="hour-icon">
+
+                🌤️
+
+            </div>
+
+
+            <div class="hour-temp">
+
+                33°
+
+            </div>
+
+        </div><div class="hour">
+
+            <div>
+
+                1:00 pm
+
+            </div>
+
+
+            <div class="hour-icon">
+
+                ⛅
+
+            </div>
+
+
+            <div class="hour-temp">
+
+                33°
+
+            </div>
+
+        </div><div class="hour">
+
+            <div>
+
+                2:00 pm
+
+            </div>
+
+
+            <div class="hour-icon">
+
+                ☁️
+
+            </div>
+
+
+            <div class="hour-temp">
+
+                33°
+
+            </div>
+
+        </div><div class="hour">
+
+            <div>
+
+                3:00 pm
+
+            </div>
+
+
+            <div class="hour-icon">
+
+                🌦️
+
+            </div>
+
+
+            <div class="hour-temp">
+
+                33°
+
+            </div>
+
+        </div><div class="hour">
+
+            <div>
+
+                4:00 pm
+
+            </div>
+
+
+            <div class="hour-icon">
+
+                ⛈️
+
+            </div>
+
+
+            <div class="hour-temp">
+
+                32°
+
+            </div>
+
+        </div><div class="hour">
+
+            <div>
+
+                5:00 pm
+
+            </div>
+
+
+            <div class="hour-icon">
+
+                ⛈️
+
+            </div>
+
+
+            <div class="hour-temp">
+
+                29°
+
+            </div>
+
+        </div><div class="hour">
+
+            <div>
+
+                6:00 pm
+
+            </div>
+
+
+            <div class="hour-icon">
+
+                🌦️
+
+            </div>
+
+
+            <div class="hour-temp">
+
+                29°
+
+            </div>
+
+        </div><div class="hour">
+
+            <div>
+
+                7:00 pm
+
+            </div>
+
+
+            <div class="hour-icon">
+
+                ☁️
+
+            </div>
+
+
+            <div class="hour-temp">
+
+                28°
+
+            </div>
+
+        </div><div class="hour">
+
+            <div>
+
+                8:00 pm
+
+            </div>
+
+
+            <div class="hour-icon">
+
+                ☁️
+
+            </div>
+
+
+            <div class="hour-temp">
+
+                27°
+
+            </div>
+
+        </div><div class="hour">
+
+            <div>
+
+                9:00 pm
+
+            </div>
+
+
+            <div class="hour-icon">
+
+                ☁️
+
+            </div>
+
+
+            <div class="hour-temp">
+
+                27°
+
+            </div>
+
+        </div><div class="hour">
+
+            <div>
+
+                10:00 pm
+
+            </div>
+
+
+            <div class="hour-icon">
+
+                ☁️
+
+            </div>
+
+
+            <div class="hour-temp">
+
+                27°
+
+            </div>
+
+        </div><div class="hour">
+
+            <div>
+
+                11:00 pm
+
+            </div>
+
+
+            <div class="hour-icon">
+
+                ☁️
+
+            </div>
+
+
+            <div class="hour-temp">
+
+                27°
+
+            </div>
+
+        </div></div>
+
+
+</div>
+
+
+
+<!-- =========================
+     WEATHER DETAILS
+========================= -->
+
+<div class="card weather-details">
+
+
+    <div class="section-title">
+
+        Weather Details
+
+    </div>
+
+
+    <div class="chart-grid">
+
+
+        <!-- TEMPERATURE -->
+
+        <div class="chart-card chart-wide">
+
+            <div class="chart-title">
+
+                🌡️ Temperature — Next 24 Hours
+
+            </div>
+
+
+            <div class="chart-wrapper">
+
+                <canvas id="temperatureChart" width="1348" height="312" style="display: block; box-sizing: border-box; height: 250px; width: 1078.4px;">
+                </canvas>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- HUMIDITY -->
+
+        <div class="chart-card">
+
+            <div class="chart-title">
+
+                💧 Humidity
+
+            </div>
+
+
+            <div class="chart-wrapper">
+
+                <canvas id="humidityChart" width="639" height="312" style="display: block; box-sizing: border-box; height: 250px; width: 511.4px;">
+                </canvas>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- RAIN -->
+
+        <div class="chart-card">
+
+            <div class="chart-title">
+
+                🌧️ Rain Probability
+
+            </div>
+
+
+            <div class="chart-wrapper">
+
+                <canvas id="rainChart" width="639" height="312" style="display: block; box-sizing: border-box; height: 250px; width: 511.4px;">
+                </canvas>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- WIND -->
+
+        <div class="chart-card">
+
+            <div class="chart-title">
+
+                💨 Wind Speed
+
+            </div>
+
+
+            <div class="chart-wrapper">
+
+                <canvas id="windChart" width="639" height="312" style="display: block; box-sizing: border-box; height: 250px; width: 511.4px;">
+                </canvas>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- CLOUD -->
+
+        <div class="chart-card">
+
+            <div class="chart-title">
+
+                ☁️ Cloud Cover
+
+            </div>
+
+
+            <div class="chart-wrapper">
+
+                <canvas id="cloudChart" width="639" height="312" style="display: block; box-sizing: border-box; height: 250px; width: 511.4px;">
+                </canvas>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- PRESSURE -->
+
+        <div class="chart-card chart-wide">
+
+            <div class="chart-title">
+
+                🌬️ Atmospheric Pressure
+
+            </div>
+
+
+            <div class="chart-wrapper">
+
+                <canvas id="pressureChart" width="1348" height="312" style="display: block; box-sizing: border-box; height: 250px; width: 1078.4px;">
+                </canvas>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- SUN + MOON -->
+
+        <div class="chart-card chart-wide">
+
+
+            <div class="chart-title">
+
+                ☀️ Sun &amp; 🌙 Moon
+
+            </div>
+
+
+            <div class="astronomy">
+
+
+                <div class="astro-box">
+
+
+                    <div class="astro-icon">
+                        🌅
+                    </div>
+
+
+                    <div class="astro-title">
+                        Sunrise
+                    </div>
+
+
+                    <div class="astro-time" id="sunrise">5:57 am</div>
+
+
+                    <br>
+
+
+                    <div class="astro-title">
+                        Sunset
+                    </div>
+
+
+                    <div class="astro-time" id="sunset">6:47 pm</div>
+
+
+                </div>
+
+
+
+                <div class="astro-box">
+
+
+                    <div class="astro-icon" id="moonIcon">🌖</div>
+
+
+                    <div class="astro-title">
+                        Moon Phase
+                    </div>
+
+
+                    <div class="astro-time" id="moonPhase">Waning Gibbous</div>
+
+
+                    <div class="moon-phase" id="moonPercent">Phase: 57%</div>
+
+
+                    <br>
+
+
+                    <div class="astro-title">
+                        Moonrise
+                    </div>
+
+
+                    <div class="astro-time" id="moonrise">7:53 pm</div>
+
+
+                    <br>
+
+
+                    <div class="astro-title">
+                        Moonset
+                    </div>
+
+
+                    <div class="astro-time" id="moonset">7:49 am</div>
+
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- UV -->
+
+        <div class="chart-card chart-wide uv-card">
+
+
+            <div class="chart-title">
+
+                🔆 UV Index
+
+            </div>
+
+
+            <div class="uv-chart">
+
+                <canvas id="uvChart" width="1348" height="275" style="display: block; box-sizing: border-box; height: 220px; width: 1078.4px;">
+                </canvas>
+
+            </div>
+
+
+            <div class="uv-value" id="uvValue">6.8</div>
+
+
+            <div class="uv-label" id="uvLabel">High</div>
+
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+</div>
+
+
+
+<!-- =========================
+     RIGHT SIDE
+========================= -->
+
+<div class="right">
+
+
+<!-- FORECAST -->
+
+<div class="card">
+
+
+    <div class="section-title">
+
+        5-Day Forecast
+
+    </div>
+
+
+    <div id="forecast"><div class="forecast-item">
+
+            <div>
+
+                Today
+
+            </div>
+
+
+            <div class="forecast-icon">
+
+                ⛈️
+
+            </div>
+
+
+            <div class="forecast-temp">
+
+                33°
+
+                <span>
+
+                    27°
+
+                </span>
+
+            </div>
+
+        </div><div class="forecast-item">
+
+            <div>
+
+                Mon
+
+            </div>
+
+
+            <div class="forecast-icon">
+
+                🌦️
+
+            </div>
+
+
+            <div class="forecast-temp">
+
+                33°
+
+                <span>
+
+                    25°
+
+                </span>
+
+            </div>
+
+        </div><div class="forecast-item">
+
+            <div>
+
+                Tue
+
+            </div>
+
+
+            <div class="forecast-icon">
+
+                ⛈️
+
+            </div>
+
+
+            <div class="forecast-temp">
+
+                32°
+
+                <span>
+
+                    25°
+
+                </span>
+
+            </div>
+
+        </div><div class="forecast-item">
+
+            <div>
+
+                Wed
+
+            </div>
+
+
+            <div class="forecast-icon">
+
+                ⛈️
+
+            </div>
+
+
+            <div class="forecast-temp">
+
+                30°
+
+                <span>
+
+                    25°
+
+                </span>
+
+            </div>
+
+        </div><div class="forecast-item">
+
+            <div>
+
+                Thu
+
+            </div>
+
+
+            <div class="forecast-icon">
+
+                ⛈️
+
+            </div>
+
+
+            <div class="forecast-temp">
+
+                30°
+
+                <span>
+
+                    25°
+
+                </span>
+
+            </div>
+
+        </div></div>
+
+
+</div>
+
+
+
+<!-- EXTRA DETAILS -->
+
+<div class="card">
+
+
+    <div class="section-title">
+
+        Current Conditions
+
+    </div>
+
+
+    <div class="stat">
+
+
+        <div class="stat-title">
+
+            Surface Pressure
+
+        </div>
+
+
+        <div class="stat-value" id="pressure">974 hPa</div>
+
+
+    </div>
+
+
+    <br>
+
+
+    <div class="stat">
+
+
+        <div class="stat-title">
+
+            Visibility
+
+        </div>
+
+
+        <div class="stat-value" id="visibility">7.2 km</div>
+
+
+    </div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+<div class="status" id="status">Live weather updated • 11:29:30 am</div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* =========================
+   API
+========================= */
+
+const WEATHER_API =
+"https://api.open-meteo.com/v1/forecast";
+
+
+const GEO_API =
+"https://geocoding-api.open-meteo.com/v1/search";
+
+
+/* =========================
+   CHARTS
+========================= */
+
+let charts = {};
+
+
+
+/* =========================
+   WEATHER CODES
+========================= */
+
+function weatherInfo(code){
+
+    const data = {
+
+        0:["Clear Sky","☀️"],
+
+        1:["Mainly Clear","🌤️"],
+
+        2:["Partly Cloudy","⛅"],
+
+        3:["Overcast","☁️"],
+
+        45:["Fog","🌫️"],
+
+        48:["Fog","🌫️"],
+
+        51:["Drizzle","🌦️"],
+
+        53:["Drizzle","🌦️"],
+
+        55:["Heavy Drizzle","🌧️"],
+
+        61:["Light Rain","🌦️"],
+
+        63:["Rain","🌧️"],
+
+        65:["Heavy Rain","🌧️"],
+
+        71:["Snow","🌨️"],
+
+        73:["Snow","❄️"],
+
+        75:["Heavy Snow","❄️"],
+
+        80:["Rain Showers","🌦️"],
+
+        81:["Rain Showers","🌧️"],
+
+        82:["Heavy Showers","⛈️"],
+
+        95:["Thunderstorm","⛈️"],
+
+        96:["Thunderstorm","⛈️"],
+
+        99:["Thunderstorm","⛈️"]
+
+    };
+
+
+    return data[code] ||
+    ["Unknown","🌍"];
+
+}
+
+
+
+/* =========================
+   TIME
+========================= */
+
+function formatTime(time){
+
+    if(!time)
+        return "--";
+
+
+    return new Date(time)
+    .toLocaleTimeString(
+
+        [],
+
+        {
+
+            hour:"numeric",
+
+            minute:"2-digit"
+
+        }
+
+    );
+
+}
+
+
+
+/* =========================
+   SEARCH CITY
+========================= */
+
+async function searchCity(){
+
+    const city =
+
+    document
+    .getElementById("cityInput")
+    .value
+    .trim();
+
+
+    /*
+       IMPORTANT:
+
+       Agar user ne city type nahi ki,
+       current location ka weather
+       show hoga.
+    */
+
+    if(!city){
+
+        loadCurrentLocation();
+
+        return;
+
+    }
+
+
+    document
+    .getElementById("status")
+    .innerText =
+    "Searching...";
+
+
+    try{
+
+        const response =
+
+        await fetch(
+
+            `${GEO_API}?name=${
+                encodeURIComponent(city)
+            }&count=1&language=en&format=json`
+
+        );
+
+
+        const result =
+        await response.json();
+
+
+        if(
+
+            !result.results ||
+
+            !result.results.length
+
+        ){
+
+            alert(
+                "City not found"
+            );
+
+            return;
+
+        }
+
+
+        const place =
+        result.results[0];
+
+
+        loadWeather(
+
+            place.latitude,
+
+            place.longitude,
+
+            place.name,
+
+            place.country
+
+        );
+
+
+    }
+    catch(error){
+
+        console.error(
+            error
+        );
+
+
+        document
+        .getElementById("status")
+        .innerText =
+        "Search failed.";
+
+    }
+
+}
+
+
+
+/* =========================
+   LOAD WEATHER
+========================= */
+
+async function loadWeather(
+
+    lat,
+
+    lon,
+
+    city,
+
+    country
+
+){
+
+    document
+    .getElementById("status")
+    .innerText =
+    "Loading weather...";
+
+
+    try{
+
+        const url =
+
+        `${WEATHER_API}?latitude=${lat}` +
+
+        `&longitude=${lon}` +
+
+        `&current=` +
+
+        `temperature_2m,` +
+
+        `relative_humidity_2m,` +
+
+        `apparent_temperature,` +
+
+        `weather_code,` +
+
+        `cloud_cover,` +
+
+        `surface_pressure,` +
+
+        `wind_speed_10m,` +
+
+        `visibility` +
+
+        `&hourly=` +
+
+        `temperature_2m,` +
+
+        `precipitation_probability,` +
+
+        `wind_speed_10m,` +
+
+        `cloud_cover,` +
+
+        `surface_pressure,` +
+
+        `weather_code` +
+
+        `&daily=` +
+
+        `weather_code,` +
+
+        `temperature_2m_max,` +
+
+        `temperature_2m_min,` +
+
+        `sunrise,` +
+
+        `sunset,` +
+
+        `moonrise,` +
+
+        `moonset,` +
+
+        `moon_phase,` +
+
+        `uv_index_max` +
+
+        `&timezone=auto` +
+
+        `&forecast_days=7`;
+
+
+        const response =
+        await fetch(url);
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "Weather API error"
+            );
+
+        }
+
+
+        const data =
+        await response.json();
+
+
+        updateWeather(
+
+            data,
+
+            city,
+
+            country
+
+        );
+
+
+    }
+    catch(error){
+
+        console.error(
+            error
+        );
+
+
+        document
+        .getElementById("status")
+        .innerText =
+        "Weather data unavailable.";
+
+    }
+
+}
+
+
+
+/* =========================
+   UPDATE WEATHER
+========================= */
+
+function updateWeather(
+
+    data,
+
+    city,
+
+    country
+
+){
+
+    const c =
+    data.current;
+
+
+    document
+    .getElementById("city")
+    .innerText =
+    city;
+
+
+    document
+    .getElementById("country")
+    .innerText =
+
+    country
+
+    ? " • " + country
+
+    : "";
+
+
+    document
+    .getElementById("temperature")
+    .innerText =
+
+    Math.round(
+        c.temperature_2m
+    );
+
+
+    const info =
+    weatherInfo(
+        c.weather_code
+    );
+
+
+    document
+    .getElementById("condition")
+    .innerText =
+    info[0];
+
+
+    document
+    .getElementById("weatherIcon")
+    .innerText =
+    info[1];
+
+
+    document
+    .getElementById("feels")
+    .innerText =
+
+    Math.round(
+        c.apparent_temperature
+    )
+
+    + " °C";
+
+
+    document
+    .getElementById("humidity")
+    .innerText =
+
+    c.relative_humidity_2m
+
+    + "%";
+
+
+    document
+    .getElementById("wind")
+    .innerText =
+
+    Math.round(
+        c.wind_speed_10m
+    )
+
+    + " km/h";
+
+
+    document
+    .getElementById("pressure")
+    .innerText =
+
+    Math.round(
+        c.surface_pressure
+    )
+
+    + " hPa";
+
+
+    document
+    .getElementById("visibility")
+    .innerText =
+
+    (
+        c.visibility / 1000
+    )
+    .toFixed(1)
+
+    + " km";
+
+
+
+    /* SUNRISE */
+
+    document
+    .getElementById("sunrise")
+    .innerText =
+
+    formatTime(
+        data.daily.sunrise[0]
+    );
+
+
+    /* SUNSET */
+
+    document
+    .getElementById("sunset")
+    .innerText =
+
+    formatTime(
+        data.daily.sunset[0]
+    );
+
+
+
+    /* MOON */
+
+    const phase =
+    data.daily.moon_phase[0];
+
+
+    const moon =
+    getMoonPhase(
+        phase
+    );
+
+
+    document
+    .getElementById("moonPhase")
+    .innerText =
+    moon.name;
+
+
+    document
+    .getElementById("moonIcon")
+    .innerText =
+    moon.icon;
+
+
+    document
+    .getElementById("moonPercent")
+    .innerText =
+
+    "Phase: " +
+
+    Math.round(
+        phase * 100
+    )
+
+    + "%";
+
+
+    document
+    .getElementById("moonrise")
+    .innerText =
+
+    formatTime(
+        data.daily.moonrise[0]
+    );
+
+
+    document
+    .getElementById("moonset")
+    .innerText =
+
+    formatTime(
+        data.daily.moonset[0]
+    );
+
+
+
+    /* UV */
+
+    const uv =
+    data.daily.uv_index_max[0];
+
+
+    document
+    .getElementById("uvValue")
+    .innerText =
+    uv.toFixed(1);
+
+
+    let uvText =
+    "Low";
+
+
+    if(uv >= 3)
+        uvText =
+        "Moderate";
+
+
+    if(uv >= 6)
+        uvText =
+        "High";
+
+
+    if(uv >= 8)
+        uvText =
+        "Very High";
+
+
+    if(uv >= 11)
+        uvText =
+        "Extreme";
+
+
+    document
+    .getElementById("uvLabel")
+    .innerText =
+    uvText;
+
+
+
+    createHourly(data);
+
+    createForecast(data);
+
+    createCharts(data);
+
+
+    document
+    .getElementById("status")
+    .innerText =
+
+    "Live weather updated • "
+
+    +
+
+    new Date()
+    .toLocaleTimeString();
+
+}
+
+
+
+/* =========================
+   MOON PHASE
+========================= */
+
+function getMoonPhase(phase){
+
+    if(
+        phase < 0.03 ||
+        phase >= 0.97
+    ){
+
+        return{
+
+            name:"New Moon",
+
+            icon:"🌑"
+
+        };
+
+    }
+
+
+    if(phase < 0.22){
+
+        return{
+
+            name:"Waxing Crescent",
+
+            icon:"🌒"
+
+        };
+
+    }
+
+
+    if(phase < 0.28){
+
+        return{
+
+            name:"First Quarter",
+
+            icon:"🌓"
+
+        };
+
+    }
+
+
+    if(phase < 0.47){
+
+        return{
+
+            name:"Waxing Gibbous",
+
+            icon:"🌔"
+
+        };
+
+    }
+
+
+    if(phase < 0.53){
+
+        return{
+
+            name:"Full Moon",
+
+            icon:"🌕"
+
+        };
+
+    }
+
+
+    if(phase < 0.72){
+
+        return{
+
+            name:"Waning Gibbous",
+
+            icon:"🌖"
+
+        };
+
+    }
+
+
+    if(phase < 0.78){
+
+        return{
+
+            name:"Last Quarter",
+
+            icon:"🌗"
+
+        };
+
+    }
+
+
+    return{
+
+        name:"Waning Crescent",
+
+        icon:"🌘"
+
+    };
+
+}
+
+
+
+/* =========================
+   HOURLY FORECAST
+========================= */
+
+function createHourly(data){
+
+    const box =
+    document
+    .getElementById("hourly");
+
+
+    box.innerHTML =
+    "";
+
+
+    const now =
+    new Date();
+
+
+    let start = 0;
+
+
+    for(
+
+        let i=0;
+
+        i<data.hourly.time.length;
+
+        i++
+
+    ){
+
+        if(
+
+            new Date(
+                data.hourly.time[i]
+            )
+
+            >= now
+
+        ){
+
+            start = i;
+
+            break;
+
+        }
+
+    }
+
+
+    for(
+
+        let i=start;
+
+        i<Math.min(
+
+            start+12,
+
+            data.hourly.time.length
+
+        );
+
+        i++
+
+    ){
+
+        const info =
+        weatherInfo(
+
+            data.hourly
+            .weather_code[i]
+
+        );
+
+
+        const div =
+        document
+        .createElement("div");
+
+
+        div.className =
+        "hour";
+
+
+        if(i === start){
+
+            div.classList
+            .add("active");
+
+        }
+
+
+        div.innerHTML = `
+
+            <div>
+
+                ${
+                    i === start
+
+                    ? "Now"
+
+                    : formatTime(
+                        data.hourly.time[i]
+                    )
+
+                }
+
+            </div>
+
+
+            <div class="hour-icon">
+
+                ${info[1]}
+
+            </div>
+
+
+            <div class="hour-temp">
+
+                ${
+                    Math.round(
+                        data.hourly
+                        .temperature_2m[i]
+                    )
+                }°
+
+            </div>
+
+        `;
+
+
+        box.appendChild(div);
+
+    }
+
+}
+
+
+
+/* =========================
+   5 DAY FORECAST
+========================= */
+
+function createForecast(data){
+
+    const box =
+    document
+    .getElementById("forecast");
+
+
+    box.innerHTML =
+    "";
+
+
+    for(
+
+        let i=0;
+
+        i<5;
+
+        i++
+
+    ){
+
+        const date =
+        new Date(
+            data.daily.time[i]
+        );
+
+
+        const day =
+
+        i === 0
+
+        ? "Today"
+
+        :
+
+        date.toLocaleDateString(
+
+            "en-US",
+
+            {
+
+                weekday:"short"
+
+            }
+
+        );
+
+
+        const info =
+        weatherInfo(
+
+            data.daily
+            .weather_code[i]
+
+        );
+
+
+        const max =
+        Math.round(
+
+            data.daily
+            .temperature_2m_max[i]
+
+        );
+
+
+        const min =
+        Math.round(
+
+            data.daily
+            .temperature_2m_min[i]
+
+        );
+
+
+        const div =
+        document
+        .createElement("div");
+
+
+        div.className =
+        "forecast-item";
+
+
+        div.innerHTML = `
+
+            <div>
+
+                ${day}
+
+            </div>
+
+
+            <div class="forecast-icon">
+
+                ${info[1]}
+
+            </div>
+
+
+            <div class="forecast-temp">
+
+                ${max}°
+
+                <span>
+
+                    ${min}°
+
+                </span>
+
+            </div>
+
+        `;
+
+
+        box.appendChild(div);
+
+    }
+
+}
+
+
+
+/* =========================
+   CHART OPTIONS
+========================= */
+
+function commonOptions(){
+
+    return{
+
+        responsive:true,
+
+        maintainAspectRatio:false,
+
+        plugins:{
+
+            legend:{
+
+                labels:{
+
+                    color:"white"
+
+                }
+
+            }
+
+        },
+
+        scales:{
+
+            x:{
+
+                ticks:{
+
+                    color:"#aebdd0",
+
+                    maxTicksLimit:8
+
+                },
+
+                grid:{
+
+                    color:
+                    "rgba(255,255,255,.08)"
+
+                }
+
+            },
+
+
+            y:{
+
+                ticks:{
+
+                    color:"#aebdd0"
+
+                },
+
+                grid:{
+
+                    color:
+                    "rgba(255,255,255,.08)"
+
+                }
+
+            }
+
+        }
+
+    };
+
+}
+
+
+
+/* =========================
+   CREATE CHARTS
+========================= */
+
+function createCharts(data){
+
+    const now =
+    new Date();
+
+
+    let start = 0;
+
+
+    for(
+
+        let i=0;
+
+        i<data.hourly.time.length;
+
+        i++
+
+    ){
+
+        if(
+
+            new Date(
+                data.hourly.time[i]
+            )
+
+            >= now
+
+        ){
+
+            start = i;
+
+            break;
+
+        }
+
+    }
+
+
+    const labels = [];
+
+    const temp = [];
+
+    const rain = [];
+
+    const wind = [];
+
+    const cloud = [];
+
+    const pressure = [];
+
+
+    for(
+
+        let i=start;
+
+        i<Math.min(
+
+            start+24,
+
+            data.hourly.time.length
+
+        );
+
+        i++
+
+    ){
+
+        labels.push(
+
+            formatTime(
+                data.hourly.time[i]
+            )
+
+        );
+
+
+        temp.push(
+
+            Math.round(
+
+                data.hourly
+                .temperature_2m[i]
+
+            )
+
+        );
+
+
+        rain.push(
+
+            data.hourly
+            .precipitation_probability[i]
+
+        );
+
+
+        wind.push(
+
+            Math.round(
+
+                data.hourly
+                .wind_speed_10m[i]
+
+            )
+
+        );
+
+
+        cloud.push(
+
+            data.hourly
+            .cloud_cover[i]
+
+        );
+
+
+        pressure.push(
+
+            Math.round(
+
+                data.hourly
+                .surface_pressure[i]
+
+            )
+
+        );
+
+    }
+
+
+
+    /* TEMPERATURE */
+
+    destroyChart(
+        "temperature"
+    );
+
+
+    charts.temperature =
+
+    new Chart(
+
+        document
+        .getElementById(
+            "temperatureChart"
+        ),
+
+        {
+
+            type:"line",
+
+            data:{
+
+                labels:labels,
+
+                datasets:[{
+
+                    label:
+                    "Temperature °C",
+
+                    data:temp,
+
+                    tension:.4,
+
+                    fill:true,
+
+                    borderWidth:3,
+
+                    pointRadius:3
+
+                }]
+
+            },
+
+            options:
+            commonOptions()
+
+        }
+
+    );
+
+
+
+    /* HUMIDITY */
+
+    destroyChart(
+        "humidity"
+    );
+
+
+    const humidity =
+    data.current
+    .relative_humidity_2m;
+
+
+    charts.humidity =
+
+    new Chart(
+
+        document
+        .getElementById(
+            "humidityChart"
+        ),
+
+        {
+
+            type:"doughnut",
+
+            data:{
+
+                labels:[
+
+                    "Humidity",
+
+                    "Remaining"
+
+                ],
+
+                datasets:[{
+
+                    data:[
+
+                        humidity,
+
+                        100-humidity
+
+                    ],
+
+                    borderWidth:0
+
+                }]
+
+            },
+
+
+            options:{
+
+                responsive:true,
+
+                maintainAspectRatio:false,
+
+                cutout:"65%",
+
+                plugins:{
+
+                    legend:{
+
+                        position:"bottom",
+
+                        labels:{
+
+                            color:"white"
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
+
+
+    /* RAIN */
+
+    destroyChart(
+        "rain"
+    );
+
+
+    charts.rain =
+
+    new Chart(
+
+        document
+        .getElementById(
+            "rainChart"
+        ),
+
+        {
+
+            type:"bar",
+
+            data:{
+
+                labels:labels,
+
+                datasets:[{
+
+                    label:
+                    "Rain Probability %",
+
+                    data:rain,
+
+                    borderRadius:6
+
+                }]
+
+            },
+
+            options:
+            commonOptions()
+
+        }
+
+    );
+
+
+
+    /* WIND */
+
+    destroyChart(
+        "wind"
+    );
+
+
+    charts.wind =
+
+    new Chart(
+
+        document
+        .getElementById(
+            "windChart"
+        ),
+
+        {
+
+            type:"bar",
+
+            data:{
+
+                labels:labels,
+
+                datasets:[{
+
+                    label:
+                    "Wind Speed km/h",
+
+                    data:wind,
+
+                    borderRadius:6
+
+                }]
+
+            },
+
+            options:
+            commonOptions()
+
+        }
+
+    );
+
+
+
+    /* CLOUD */
+
+    destroyChart(
+        "cloud"
+    );
+
+
+    charts.cloud =
+
+    new Chart(
+
+        document
+        .getElementById(
+            "cloudChart"
+        ),
+
+        {
+
+            type:"bar",
+
+            data:{
+
+                labels:labels,
+
+                datasets:[{
+
+                    label:
+                    "Cloud Cover %",
+
+                    data:cloud,
+
+                    borderRadius:6
+
+                }]
+
+            },
+
+            options:
+            commonOptions()
+
+        }
+
+    );
+
+
+
+    /* PRESSURE */
+
+    destroyChart(
+        "pressure"
+    );
+
+
+    charts.pressure =
+
+    new Chart(
+
+        document
+        .getElementById(
+            "pressureChart"
+        ),
+
+        {
+
+            type:"line",
+
+            data:{
+
+                labels:labels,
+
+                datasets:[{
+
+                    label:
+                    "Pressure hPa",
+
+                    data:pressure,
+
+                    tension:.35,
+
+                    borderWidth:3,
+
+                    pointRadius:3
+
+                }]
+
+            },
+
+            options:
+            commonOptions()
+
+        }
+
+    );
+
+
+
+    /* UV */
+
+    destroyChart(
+        "uv"
+    );
+
+
+    const uv =
+    data.daily
+    .uv_index_max[0];
+
+
+    charts.uv =
+
+    new Chart(
+
+        document
+        .getElementById(
+            "uvChart"
+        ),
+
+        {
+
+            type:"doughnut",
+
+            data:{
+
+                labels:[
+
+                    "UV Index",
+
+                    "Remaining"
+
+                ],
+
+                datasets:[{
+
+                    data:[
+
+                        Math.min(
+                            uv,
+                            12
+                        ),
+
+                        Math.max(
+                            12-uv,
+                            0
+                        )
+
+                    ],
+
+                    borderWidth:0
+
+                }]
+
+            },
+
+
+            options:{
+
+                responsive:true,
+
+                maintainAspectRatio:false,
+
+                rotation:-90,
+
+                circumference:180,
+
+                cutout:"70%",
+
+                plugins:{
+
+                    legend:{
+
+                        display:false
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
+}
+
+
+
+/* =========================
+   DESTROY CHART
+========================= */
+
+function destroyChart(name){
+
+    if(charts[name]){
+
+        charts[name].destroy();
+
+    }
+
+}
+
+
+
+/* =========================
+   DATE
+========================= */
+
+document
+.getElementById("date")
+.innerText =
+
+new Date()
+.toLocaleDateString(
+
+    "en-US",
+
+    {
+
+        weekday:"long",
+
+        month:"long",
+
+        day:"numeric"
+
+    }
+
+);
+
+
+
+/* =========================
+   ENTER KEY
+========================= */
+
+document
+.getElementById("cityInput")
+.addEventListener(
+
+    "keydown",
+
+    function(e){
+
+        if(
+            e.key === "Enter"
+        ){
+
+            searchCity();
+
+        }
+
+    }
+
+);
+
+
+
+/* =========================
+   CURRENT LOCATION
+========================= */
+
+function loadCurrentLocation(){
+
+    document
+    .getElementById("status")
+    .innerText =
+    "Detecting your current city...";
+
+
+    if(
+        !navigator.geolocation
+    ){
+
+        document
+        .getElementById("status")
+        .innerText =
+        "Location is not supported by this browser.";
+
+        return;
+
+    }
+
+
+    navigator.geolocation
+    .getCurrentPosition(
+
+        async function(position){
+
+            const lat =
+            position.coords.latitude;
+
+
+            const lon =
+            position.coords.longitude;
+
+
+            try{
+
+                /*
+                    Reverse Geocoding:
+                    Coordinates → City
+                */
+
+                const response =
+                await fetch(
+
+                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1`
+
+                );
+
+
+                if(!response.ok){
+
+                    throw new Error(
+                        "Location lookup failed"
+                    );
+
+                }
+
+
+                const result =
+                await response.json();
+
+
+                const address =
+                result.address || {};
+
+
+                const city =
+
+                    address.city ||
+
+                    address.town ||
+
+                    address.village ||
+
+                    address.municipality ||
+
+                    address.county ||
+
+                    "Current Location";
+
+
+                const country =
+
+                    address.country ||
+
+                    "";
+
+
+                /*
+                    Current location ka
+                    weather load karo
+                */
+
+                loadWeather(
+
+                    lat,
+
+                    lon,
+
+                    city,
+
+                    country
+
+                );
+
+            }
+            catch(error){
+
+                console.error(
+                    error
+                );
+
+
+                /*
+                    City name na mile,
+                    fir bhi coordinates se
+                    weather load karo
+                */
+
+                loadWeather(
+
+                    lat,
+
+                    lon,
+
+                    "Current Location",
+
+                    ""
+
+                );
+
+            }
+
+        },
+
+
+        function(error){
+
+            console.error(
+                error
+            );
+
+
+            document
+            .getElementById("city")
+            .innerText =
+            "Location Required";
+
+
+            document
+            .getElementById("country")
+            .innerText =
+            "";
+
+
+            document
+            .getElementById("status")
+            .innerText =
+            "Please allow location permission or search a city.";
+
+        },
+
+
+        {
+
+            enableHighAccuracy:true,
+
+            timeout:10000,
+
+            maximumAge:300000
+
+        }
+
+    );
+
+}
+
+
+
+/* =========================
+   DEFAULT BEHAVIOR
+========================= */
+
+/*
+   User ne city type nahi ki hai,
+   isliye website open hote hi
+   current location ka weather
+   automatically load hoga.
+*/
+
+loadCurrentLocation();
+
+
+</script>
+
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+</body></html>

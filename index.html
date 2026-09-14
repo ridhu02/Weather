@@ -63,6 +63,28 @@ body{
 
 
 /* =========================
+   DAY / NIGHT MODE
+========================= */
+
+body.night{
+    background:
+        radial-gradient(circle at 15% 15%, #18264d, transparent 35%),
+        radial-gradient(circle at 85% 10%, #111a38, transparent 35%),
+        linear-gradient(135deg, #020817, #0b1730);
+}
+
+.night-badge{
+    display:inline-block;
+    margin-left:6px;
+    padding:3px 7px;
+    border-radius:20px;
+    background:rgba(255,255,255,.10);
+    color:#dce8ff;
+    font-size:10px;
+    vertical-align:middle;
+}
+
+/* =========================
    CONTAINER
 ========================= */
 
@@ -1550,7 +1572,34 @@ let charts = {};
    WEATHER CODES
 ========================= */
 
-function weatherInfo(code){
+function weatherInfo(code, isDay = 1){
+
+    if(isDay === 0){
+        const nightData = {
+            0:["Clear Sky","🌙"],
+            1:["Mainly Clear","🌙"],
+            2:["Partly Cloudy","☁️🌙"],
+            3:["Overcast","☁️"],
+            45:["Fog","🌫️"],
+            48:["Fog","🌫️"],
+            51:["Drizzle","🌧️"],
+            53:["Drizzle","🌧️"],
+            55:["Heavy Drizzle","🌧️"],
+            61:["Light Rain","🌧️"],
+            63:["Rain","🌧️"],
+            65:["Heavy Rain","🌧️"],
+            71:["Snow","🌨️"],
+            73:["Snow","❄️"],
+            75:["Heavy Snow","❄️"],
+            80:["Rain Showers","🌧️"],
+            81:["Rain Showers","🌧️"],
+            82:["Heavy Showers","⛈️"],
+            95:["Thunderstorm","⛈️"],
+            96:["Thunderstorm","⛈️"],
+            99:["Thunderstorm","⛈️"]
+        };
+        return nightData[code] || ["Unknown","🌙"];
+    }
 
     const data = {
 
@@ -1771,7 +1820,9 @@ async function loadWeather(
 
             `wind_speed_10m,` +
 
-            `visibility` +
+            `visibility,` +
+
+            `is_day` +
 
             `&hourly=` +
 
@@ -1785,7 +1836,9 @@ async function loadWeather(
 
             `surface_pressure,` +
 
-            `weather_code` +
+            `weather_code,` +
+
+            `is_day` +
 
             `&daily=` +
 
@@ -1868,6 +1921,11 @@ function updateWeather(
     const c =
         data.current;
 
+    document.body.classList.toggle(
+        "night",
+        c.is_day === 0
+    );
+
 
     document
     .getElementById("city")
@@ -1895,7 +1953,8 @@ function updateWeather(
 
     const info =
         weatherInfo(
-            c.weather_code
+            c.weather_code,
+            c.is_day
         );
 
 
@@ -2263,7 +2322,8 @@ function createHourly(data){
 
         const info =
             weatherInfo(
-                data.hourly.weather_code[i]
+                data.hourly.weather_code[i],
+                data.hourly.is_day[i]
             );
 
 
@@ -2297,6 +2357,10 @@ function createHourly(data){
                         data.hourly.time[i]
                     )
                 }
+
+                <div class="night-badge">
+                    ${data.hourly.is_day[i] ? "☀️ Day" : "🌙 Night"}
+                </div>
 
             </div>
 
